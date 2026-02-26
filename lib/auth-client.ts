@@ -10,3 +10,19 @@ export const {
   signUp,
   signOut,
 } = authClient;
+
+// Helper type for session with role
+export type SessionWithRole = {
+  session: {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      image?: string | null;
+      role?: string;
+      createdAt: Date;
+      updatedAt: Date;
+      emailVerified: boolean;
+    };
+  } | null;
+};

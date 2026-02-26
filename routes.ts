@@ -10,12 +10,38 @@ export const publicRoutes = [
 
 /**
  * An array of routes that are used for authentication
- * These routes will redirect logged in users to /
+ * These routes will redirect logged in users based on their role
  * @type {string[]}
  */
 export const authRoutes = [
   "/login",
   "/signup"
+];
+
+/**
+ * An array of routes that are restricted to admin users only
+ * Regular users will be redirected to /account
+ * @type {string[]}
+ */
+export const adminRoutes = [
+  "/admin",
+  "/admin/analytics",
+  "/admin/orders",
+  "/admin/products"
+];
+
+/**
+ * An array of routes that are restricted to regular users only
+ * Admin users will be redirected to /admin
+ * @type {string[]}
+ */
+export const userRoutes = [
+  "/account",
+  "/account/orders",
+  "/account/wishlist",
+  "/checkout",
+  "/onboarding",
+  "/cart"
 ];
 
 /**
@@ -27,6 +53,9 @@ export const apiAuthPrefix = "/api/auth";
 
 /**
  * The default redirect path after logging in
+ * Regular users -> /account
+ * Admin users -> /admin
  * @type {string}
  */
 export const DEFAULT_LOGIN_REDIRECT = "/account";
+export const ADMIN_LOGIN_REDIRECT = "/admin";

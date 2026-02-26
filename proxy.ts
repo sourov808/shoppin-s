@@ -1,40 +1,61 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { authRoutes, publicRoutes, apiAuthPrefix, DEFAULT_LOGIN_REDIRECT } from "./routes";
+import { authRoutes, publicRoutes, apiAuthPrefix, adminRoutes, userRoutes } from "./routes";
 
 export function proxy(request: NextRequest) {
   const { nextUrl } = request;
+  const pathname = nextUrl.pathname;
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname) || nextUrl.pathname.startsWith("/products");
-  const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-
+  // Skip Next.js internals, static files, and API auth routes
+  const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
   if (isApiAuthRoute) {
     return NextResponse.next();
   }
 
-  // For auth routes (login/signup), just let them through
-  // Session validation happens on the server side
-  if (isAuthRoute) {
-    return NextResponse.next();
-  }
+  // Check session cookie
+  const sessionCookie = request.cookies.get("better-auth.session_token");
+  const isAuthenticated = !!sessionCookie;
 
-  // For admin routes, check session cookie
-  if (isAdminRoute) {
-    const sessionCookie = request.cookies.get("better-auth.session_token");
-    if (!sessionCookie) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
+  // Handle auth routes (login, signup)
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  if (isAuthRoute) {
+    if (isAuthenticated) {
+      // Redirect authenticated users to their dashboard
+      // Role-based redirect will be handled server-side
+      return NextResponse.redirect(new URL("/account", nextUrl));
     }
     return NextResponse.next();
   }
 
-  // For other protected routes, check session cookie
-  const sessionCookie = request.cookies.get("better-auth.session_token");
-  if (!sessionCookie && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
+  // Handle admin routes - only check authentication, not role
+  // Role checking happens server-side in the layout
+  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+  if (isAdminRoute) {
+    if (!isAuthenticated) {
+      // Redirect unauthenticated users to login
+      const loginUrl = new URL("/login", nextUrl);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // Allow request through - role check happens in server layout
+    return NextResponse.next();
   }
 
+  // Handle user/customer routes - only check authentication, not role
+  // Role checking happens server-side in the layout
+  const isUserRoute = userRoutes.some(route => pathname.startsWith(route));
+  if (isUserRoute) {
+    if (!isAuthenticated) {
+      // Redirect unauthenticated users to login
+      const loginUrl = new URL("/login", nextUrl);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // Allow request through - role check happens in server layout
+    return NextResponse.next();
+  }
+
+  // Public routes - allow access to everyone
   return NextResponse.next();
 }
 

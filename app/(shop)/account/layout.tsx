@@ -18,12 +18,15 @@ export default async function AccountLayout({
     redirect("/login");
   }
 
+  // Fetch user from database to get the role
   const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: {
+      id: true,
       name: true,
       email: true,
       image: true,
+      role: true,
       createdAt: true,
     }
   });
@@ -32,11 +35,16 @@ export default async function AccountLayout({
     redirect("/login");
   }
 
+  // Redirect admin users to admin dashboard
+  if (user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   return (
     <div className="flex flex-col lg:flex-row flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pb-8 gap-8">
       {/* Search Sidebar on lg */}
       <AccountSidebar user={user} />
-      
+
       {/* Main content w/ mobile nav */}
       <main className="flex-1 flex flex-col gap-6 min-w-0">
         <AccountMobileNav />

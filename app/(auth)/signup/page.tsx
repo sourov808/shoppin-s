@@ -50,7 +50,7 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      const { error: signUpError } = await authClient.signUp.email({
+      const { error: signUpError, data } = await authClient.signUp.email({
         email: values.email,
         password: values.password,
         name: values.name,
@@ -62,8 +62,8 @@ export default function SignupPage() {
         return;
       }
 
-      // Automatically redirect to onboarding after successful signup
-      router.push("/onboarding");
+      // Redirect to dashboard which will handle role-based redirect
+      router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";

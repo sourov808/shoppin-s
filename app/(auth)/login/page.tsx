@@ -49,7 +49,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error: signInError } = await authClient.signIn.email({
+      const { error: signInError, data } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
         rememberMe: values.rememberMe,
@@ -61,8 +61,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Automatically redirect to home or dashboard after successful signin
-      router.push("/");
+      // Redirect to dashboard which will handle role-based redirect
+      router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
