@@ -6,6 +6,7 @@ import { useCart } from "@/context/cart-context";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LogIn, UserPlus } from "lucide-react";
+import { SearchTypeahead } from "@/components/search-typeahead";
 
 export function Header() {
   const { cartCount } = useCart();
@@ -31,25 +32,17 @@ export function Header() {
           </Link>
           
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
             <Link className="text-neutral-600 hover:text-primary font-medium transition-colors" href="/products">New Arrivals</Link>
-            <Link className="text-neutral-600 hover:text-primary font-medium transition-colors" href="/products?category=HEADPHONES">Headphones</Link>
-            <Link className="text-neutral-600 hover:text-primary font-medium transition-colors" href="/products?category=WEARABLES">Wearables</Link>
-            <Link className="text-neutral-600 hover:text-primary font-medium transition-colors" href="/products?category=ACCESSORIES">Accessories</Link>
             <Link className="text-primary font-medium transition-colors" href="/products?sale=true">Sale</Link>
+            <Link className="text-neutral-600 hover:text-primary font-medium transition-colors" href="/products">Products</Link>
+
           </nav>
           
           {/* Actions */}
           <div className="flex items-center gap-4">
             {/* Search Bar (Desktop) */}
-            <div className="hidden lg:flex items-center bg-neutral-100 rounded-full px-4 h-10 w-64 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-              <span className="material-symbols-outlined text-neutral-500 text-[20px]">search</span>
-              <input 
-                className="bg-transparent border-none text-sm w-full focus:ring-0 placeholder:text-neutral-500 text-neutral-900 outline-none" 
-                placeholder="Search products..." 
-                type="text"
-              />
-            </div>
+            <SearchTypeahead />
             
             <div className="relative group">
               <button className="p-2 hover:bg-neutral-100 rounded-full transition-colors text-neutral-800 flex items-center justify-center">
@@ -100,9 +93,9 @@ export function Header() {
               <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4 mt-8">
                   <Link href="/products" className="text-sm font-medium hover:text-primary transition-colors">New Arrivals</Link>
-                  <Link href="/products?category=HEADPHONES" className="text-sm font-medium hover:text-primary transition-colors">Headphones</Link>
-                  <Link href="/products?category=WEARABLES" className="text-sm font-medium hover:text-primary transition-colors">Wearables</Link>
-                  <Link href="/products?category=ACCESSORIES" className="text-sm font-medium hover:text-primary transition-colors">Accessories</Link>
+                  <Link href="/products?sale=true" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">Sale</Link>
+                  <Link href="/products" className="text-sm font-medium hover:text-primary transition-colors">Products</Link>
+                  <Link href="/#about" className="text-sm font-medium hover:text-primary transition-colors">Other Stuffs</Link>
                   
                   <div className="h-px bg-neutral-200 my-2"></div>
                   

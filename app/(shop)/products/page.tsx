@@ -2,10 +2,10 @@
 import { db } from "@/lib/db";
 import { ProductCard } from "@/components/product-card";
 import { ProductFilters } from "@/components/product-filters";
-import { Prisma } from "@prisma/client";
+import { Prisma, Category } from "@prisma/client";
 
 // Generate static params for typical searches or revalidate tags if needed
-// export const revalidate = 60; // optionally cache the page for 60 seconds
+export const revalidate = 1800; // optionally cache the page for 60 seconds
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -23,7 +23,7 @@ export default async function ProductsPage(props: { searchParams: SearchParams }
 
   if (categoryParam && categoryParam !== "All") {
     // Assuming category enum values match the strings exactly (e.g. "HEADPHONES")
-    whereClause.category = categoryParam as any;
+    whereClause.category = categoryParam as Category;
   }
 
   if (searchString) {
@@ -57,7 +57,7 @@ export default async function ProductsPage(props: { searchParams: SearchParams }
         
         {/* Header Section */}
         <div className="mb-10 flex flex-col gap-4">
-          <h1 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/60 sm:text-5xl">
+          <h1 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-linear-to-r from-foreground to-foreground/60 sm:text-5xl">
             Our Collection
           </h1>
           <p className="max-w-2xl text-lg text-muted-foreground">
@@ -66,7 +66,7 @@ export default async function ProductsPage(props: { searchParams: SearchParams }
         </div>
 
         {/* Filters Section */}
-        <div className="mb-8 sticky top-4 z-10 transition-shadow">
+        <div className="mb-8 sticky top-20 z-10 transition-shadow max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide">
           <ProductFilters />
         </div>
 
@@ -99,7 +99,7 @@ export default async function ProductsPage(props: { searchParams: SearchParams }
             </div>
             <h3 className="text-2xl font-bold text-foreground">No products found</h3>
             <p className="mt-2 max-w-md text-muted-foreground">
-              We couldn't find any products matching your current filters. Try changing your search query or selecting a different category.
+              We couldn&apos;t find any products matching your current filters. Try changing your search query or selecting a different category.
             </p>
           </div>
         )}

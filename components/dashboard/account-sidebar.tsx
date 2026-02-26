@@ -31,8 +31,8 @@ export function AccountSidebar({ user }: AccountSidebarProps) {
         <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl opacity-60 pointer-events-none"></div>
         
         <div className="relative z-10 flex flex-col items-center text-center gap-4">
-          <div className="size-24 rounded-full overflow-hidden bg-gradient-to-tr from-primary/30 to-blue-500/20 p-1 flex items-center justify-center shrink-0 shadow-lg">
-            <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-[#181211] flex items-center justify-center text-3xl font-bold text-slate-700 dark:text-slate-300">
+          <div className="size-24 rounded-full overflow-hidden bg-linear-to-tr from-primary/30 to-blue-500/20 p-1 flex items-center justify-center shrink-0 shadow-lg">
+            <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-neutral-800 flex items-center justify-center text-3xl font-bold text-slate-700 dark:text-slate-300">
               {user.image ? (
                  <Image 
                   alt={user.name} 

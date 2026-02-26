@@ -21,7 +21,7 @@ export default async function OrdersPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold text-[#181211] dark:text-white tracking-tight">Order History</h1>
+        <h1 className="text-3xl font-bold text-neutral-800 dark:text-white tracking-tight">Order History</h1>
         <p className="text-[#8a6760] dark:text-slate-400 mt-1">Review your past purchases and track current shipments.</p>
       </div>
 
@@ -40,7 +40,7 @@ export default async function OrdersPage() {
             <tbody className="divide-y divide-slate-200 dark:divide-[#3a2522]">
               {orders.map((order) => (
                 <tr key={order.id} className="group hover:bg-slate-50 dark:hover:bg-[#2a1d1a]/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-[#181211] dark:text-white">{order.id}</td>
+                  <td className="px-6 py-4 font-medium text-neutral-800 dark:text-white">{order.id}</td>
                   <td className="px-6 py-4 text-[#8a6760] dark:text-slate-400">{order.date}</td>
                   <td className="px-6 py-4">
                     {order.status === 'Delivered' ? (
@@ -57,7 +57,7 @@ export default async function OrdersPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right font-medium text-[#181211] dark:text-white">${order.total.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-right font-medium text-neutral-800 dark:text-white">${order.total.toFixed(2)}</td>
                   <td className="px-6 py-4 text-center">
                     <button className="text-slate-400 hover:text-primary transition-colors">
                       <span className="material-symbols-outlined">visibility</span>

@@ -22,9 +22,9 @@ export function DashboardClient({ user, address }: DashboardClientProps) {
     <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#181211] dark:text-white tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-neutral-800 dark:text-white tracking-tight">Dashboard</h1>
           <p className="text-[#8a6760] dark:text-slate-400 mt-1">
-            Welcome back, {user.name.split(' ')[0]}! Here's what's happening with your account.
+            Welcome back, {user.name.split(' ')[0]}! Here&apos;s what&apos;s happening with your account.
           </p>
         </div>
         <button 
@@ -43,7 +43,7 @@ export function DashboardClient({ user, address }: DashboardClientProps) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">home</span>
-              <h3 className="font-bold text-lg text-[#181211] dark:text-white">Default Shipping</h3>
+              <h3 className="font-bold text-lg text-neutral-800 dark:text-white">Default Shipping</h3>
             </div>
             <button 
               onClick={() => setIsAddressModalOpen(true)}
@@ -54,7 +54,7 @@ export function DashboardClient({ user, address }: DashboardClientProps) {
           </div>
           
           <div className="flex-1">
-            <p className="font-semibold text-[#181211] dark:text-white mb-1">{user.name}</p>
+            <p className="font-semibold text-neutral-800 dark:text-white mb-1">{user.name}</p>
             {address ? (
               <p className="text-[#8a6760] dark:text-slate-400 text-sm leading-relaxed">
                 {address.street}<br />
@@ -84,7 +84,7 @@ export function DashboardClient({ user, address }: DashboardClientProps) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">credit_card</span>
-              <h3 className="font-bold text-lg text-[#181211] dark:text-white">Payment Method</h3>
+              <h3 className="font-bold text-lg text-neutral-800 dark:text-white">Payment Method</h3>
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-center items-center gap-3">

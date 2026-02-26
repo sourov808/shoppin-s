@@ -44,7 +44,7 @@ export default async function AccountPage() {
           </div>
           <div>
             <p className="text-[#8a6760] dark:text-slate-400 text-sm font-medium">Total Orders</p>
-            <p className="text-2xl font-bold text-[#181211] dark:text-white">0</p>
+            <p className="text-2xl font-bold text-neutral-800 dark:text-white">0</p>
           </div>
         </div>
         <div className="bg-white dark:bg-[#1a0f0d] p-5 rounded-xl border border-slate-200 dark:border-[#3a2522] shadow-sm flex items-center gap-4">
@@ -53,7 +53,7 @@ export default async function AccountPage() {
           </div>
           <div>
             <p className="text-[#8a6760] dark:text-slate-400 text-sm font-medium">In Transit</p>
-            <p className="text-2xl font-bold text-[#181211] dark:text-white">0</p>
+            <p className="text-2xl font-bold text-neutral-800 dark:text-white">0</p>
           </div>
         </div>
         <div className="bg-white dark:bg-[#1a0f0d] p-5 rounded-xl border border-slate-200 dark:border-[#3a2522] shadow-sm flex items-center gap-4">
@@ -62,7 +62,7 @@ export default async function AccountPage() {
           </div>
           <div>
             <p className="text-[#8a6760] dark:text-slate-400 text-sm font-medium">Saved Items</p>
-            <p className="text-2xl font-bold text-[#181211] dark:text-white">0</p>
+            <p className="text-2xl font-bold text-neutral-800 dark:text-white">0</p>
           </div>
         </div>
       </div>

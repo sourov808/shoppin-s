@@ -29,6 +29,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const savedCart = localStorage.getItem("shopping_cart");
     if (savedCart) {
       try {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         setCart(JSON.parse(savedCart));
       } catch (e) {
         console.error("Failed to parse cart", e);

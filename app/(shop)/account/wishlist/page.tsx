@@ -26,7 +26,7 @@ export default async function WishlistPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold text-[#181211] dark:text-white tracking-tight">Your Wishlist</h1>
+        <h1 className="text-3xl font-bold text-neutral-800 dark:text-white tracking-tight">Your Wishlist</h1>
         <p className="text-[#8a6760] dark:text-slate-400 mt-1">Products you've saved for later consideration.</p>
       </div>
 
