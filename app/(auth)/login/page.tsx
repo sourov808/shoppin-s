@@ -49,10 +49,16 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error: signInError } = await authClient.signIn.email({
+      const { error: signInError, data } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
         rememberMe: values.rememberMe,
+        fetchOptions: {
+          onSuccess: () => {
+            // Reload the page to ensure session is updated across all components
+            window.location.href = "/dashboard";
+          },
+        },
       });
 
       if (signInError) {
@@ -60,10 +66,6 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
       }
-
-      // Automatically redirect to home or dashboard after successful signin
-      router.push("/");
-      router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(message);
@@ -172,7 +174,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-6 px-4 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-primary hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all disabled:opacity-70 h-auto"
+            className="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-primary hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all disabled:opacity-70 h-auto"
           >
             {isLoading ? (
               <>
