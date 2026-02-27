@@ -27,7 +27,7 @@ export default async function WishlistPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-bold text-neutral-800 dark:text-white tracking-tight">Your Wishlist</h1>
-        <p className="text-[#8a6760] dark:text-slate-400 mt-1">Products you've saved for later consideration.</p>
+        <p className="text-[#8a6760] dark:text-slate-400 mt-1">Products you&apos;ve saved for later consideration.</p>
       </div>
 
       <div className="bg-white dark:bg-[#1a0f0d] rounded-xl border border-slate-200 dark:border-[#3a2522] shadow-sm overflow-hidden min-h-[400px]">
@@ -66,7 +66,7 @@ export default async function WishlistPage() {
             </div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Your wishlist is empty</h2>
             <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6">
-              You haven't saved any items yet. Start browsing to add items you love!
+              You haven&apos;t saved any items yet. Start browsing to add items you love!
             </p>
             <Link 
               href="/products" 
