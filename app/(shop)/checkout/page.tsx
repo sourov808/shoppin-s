@@ -1,28 +1,80 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useSession } from "@/lib/auth-client";
 import { useCart } from "@/context/cart-context";
+import { createOrder } from "@/lib/actions/checkout-actions";
+import { Loader2 } from "lucide-react";
 
 export default function CheckoutPage() {
   const { cartTotal, cartCount, clearCart, cart } = useCart();
   const { data: session } = useSession();
+  const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderNum, setOrderNum] = useState("");
+  const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    address: "",
+    apartment: "",
+    city: "",
+    state: "California",
+    zipCode: "",
+    country: "United States",
+    phone: "",
+  });
 
   const tax = cartTotal * 0.08;
   const shipping = cartTotal > 150 ? 0 : 15.00;
   const finalTotal = cartTotal + tax + shipping;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate order processing
-    setTimeout(() => {
-      setOrderNum("ORD-" + Math.floor(Math.random() * 10000));
-      setIsSuccess(true);
-      clearCart();
-    }, 1500);
+    setError("");
+
+    startTransition(async () => {
+      const orderItems = cart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
+      const result = await createOrder({
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        address: formData.address,
+        apartment: formData.apartment,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: formData.country,
+        phone: formData.phone,
+        items: orderItems,
+        subtotal: cartTotal,
+        shippingCost: shipping,
+        taxAmount: tax,
+        totalAmount: finalTotal,
+        userId: session?.user?.id,
+      });
+
+      if (result.success) {
+        setOrderNum(result.orderId?.slice(0, 8).toUpperCase() || "ORD-" + Math.floor(Math.random() * 10000));
+        setIsSuccess(true);
+        clearCart();
+      } else {
+        setError(result.error || "Failed to create order");
+      }
+    });
   };
 
   if (isSuccess) {
@@ -32,11 +84,31 @@ export default function CheckoutPage() {
           <span className="material-symbols-outlined text-[64px]">check_circle</span>
         </div>
         <h1 className="text-3xl font-extrabold text-neutral-800 dark:text-white tracking-tight mb-4">Order Confirmed!</h1>
-        <p className="text-[#8a6760] dark:text-slate-400 mb-8 max-w-md">
+        <p className="text-[#8a6760] dark:text-slate-400 mb-2 max-w-md">
           Thank you for your purchase. Your order #{orderNum} is currently being processed and will be shipped soon.
+        </p>
+        <p className="text-sm text-[#8a6760] dark:text-slate-400 mb-8 max-w-md">
+          A confirmation email has been sent to {formData.email}
         </p>
         <Link href="/products" className="bg-primary hover:bg-red-600 text-white rounded-lg px-8 py-4 text-sm font-bold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
           Continue Shopping
+        </Link>
+      </div>
+    );
+  }
+
+  if (cartCount === 0) {
+    return (
+      <div className="grow w-full max-w-[1280px] mx-auto px-6 md:px-12 lg:px-40 py-24 flex flex-col items-center justify-center text-center">
+        <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-full inline-block mb-6 text-slate-400">
+          <span className="material-symbols-outlined text-[48px]">shopping_cart</span>
+        </div>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Your cart is empty</h1>
+        <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md">
+          Add some products to your cart before checking out.
+        </p>
+        <Link href="/products" className="bg-primary hover:bg-primary/90 text-white font-bold h-12 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
+          Start Shopping
         </Link>
       </div>
     );
@@ -83,6 +155,12 @@ export default function CheckoutPage() {
           <h1 className="text-3xl font-bold tracking-tight text-neutral-800 dark:text-white mb-8">Shipping Details</h1>
           
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+            
             {/* Contact Info Section */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
@@ -95,9 +173,20 @@ export default function CheckoutPage() {
               </div>
               <input 
                 required
+                id="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none mb-3" 
                 placeholder="Email address" 
                 type="email"
+              />
+              <input 
+                id="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none mb-3" 
+                placeholder="Phone number (optional)" 
+                type="tel"
               />
               <label className="flex items-center gap-2 cursor-pointer">
                 <input className="rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" />
@@ -111,27 +200,27 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="first-name">First name</label>
-                  <input required className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="first-name" type="text" />
+                  <input required id="firstName" value={formData.firstName} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="last-name">Last name</label>
-                  <input required className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="last-name" type="text" />
+                  <input required id="lastName" value={formData.lastName} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="address">Address</label>
-                  <input required className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="address" type="text" />
+                  <input required id="address" value={formData.address} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="apartment">Apartment, suite, etc. (optional)</label>
-                  <input className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="apartment" type="text" />
+                  <input id="apartment" value={formData.apartment} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="city">City</label>
-                  <input required className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="city" type="text" />
+                  <input required id="city" value={formData.city} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="country">Country/Region</label>
-                  <select defaultValue="United States" className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="country">
+                  <select id="country" value={formData.country} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
                     <option>United States</option>
                     <option>Canada</option>
                     <option>Mexico</option>
@@ -141,7 +230,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="state">State</label>
-                  <select defaultValue="California" className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="state">
+                  <select id="state" value={formData.state} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none">
                     <option>California</option>
                     <option>New York</option>
                     <option>Texas</option>
@@ -151,13 +240,9 @@ export default function CheckoutPage() {
                 </div>
                 <div className="sm:col-span-1">
                   <label className="block text-sm font-medium text-neutral-800 dark:text-slate-200 mb-1" htmlFor="zip">ZIP code</label>
-                  <input required className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" id="zip" type="text" />
+                  <input required id="zipCode" value={formData.zipCode} onChange={handleInputChange} className="w-full rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" type="text" />
                 </div>
               </div>
-              <label className="flex items-center gap-2 cursor-pointer mt-4">
-                <input defaultChecked className="rounded border-gray-300 text-primary focus:ring-primary bg-transparent" type="checkbox" />
-                <span className="text-sm text-[#5c4540] dark:text-slate-400">Save this information for next time</span>
-              </label>
             </div>
             
             {/* Shipping Method */}
@@ -191,10 +276,17 @@ export default function CheckoutPage() {
               </Link>
               <button 
                 type="submit"
-                disabled={cartCount === 0}
-                className="bg-primary hover:bg-red-600 text-white rounded-lg px-8 py-3 text-sm font-bold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-slate-400"
+                disabled={isPending || cartCount === 0}
+                className="bg-primary hover:bg-red-600 text-white rounded-lg px-8 py-3 text-sm font-bold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-slate-400 flex items-center gap-2"
               >
-                Place Order
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin h-4 w-4" />
+                    Processing...
+                  </>
+                ) : (
+                  "Place Order"
+                )}
               </button>
             </div>
           </form>
@@ -206,7 +298,7 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-bold text-neutral-800 dark:text-white mb-6">Order Summary</h2>
             
             {/* Items List */}
-            <div className="space-y-6 mb-6">
+            <div className="space-y-6 mb-6 max-h-[300px] overflow-y-auto">
               {cart.map((item) => (
                 <div key={item.id} className="flex items-start gap-4">
                   <div className="relative h-20 w-20 shrink-0 rounded-lg border border-[#e6dddb] bg-background-light dark:border-[#3a2522] dark:bg-[#2c1c19] overflow-hidden">
@@ -222,12 +314,6 @@ export default function CheckoutPage() {
                   <span className="text-sm font-medium text-neutral-800 dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
-            </div>
-            
-            {/* Discount Code */}
-            <div className="flex gap-2 mb-6 pt-6 border-t border-[#e6dddb] dark:border-[#3a2522]">
-              <input className="flex-1 rounded-lg border border-[#e6dddb] bg-white dark:bg-[#1a0f0d] dark:border-[#3a2522] dark:text-white px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" placeholder="Gift card or discount code" type="text" />
-              <button className="bg-[#e6dddb] hover:bg-[#d6c7c4] dark:bg-[#3a2522] dark:hover:bg-[#4a3532] text-neutral-800 dark:text-white rounded-lg px-4 py-2 text-sm font-bold transition-colors">Apply</button>
             </div>
             
             {/* Cost Breakdown */}

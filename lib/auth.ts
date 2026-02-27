@@ -10,5 +10,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [nextCookies ()],
+  plugins: [nextCookies()],
+  trustedOrigins: [
+    "http://localhost:3000",
+    process.env.BETTER_AUTH_URL || "https://e-shopping-lemon.vercel.app",
+  ],
 });

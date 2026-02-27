@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,6 +32,8 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,23 +51,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error: signInError, data } = await authClient.signIn.email({
+      const result = await authClient.signIn.email({
         email: values.email,
         password: values.password,
         rememberMe: values.rememberMe,
-        fetchOptions: {
-          onSuccess: () => {
-            // Reload the page to ensure session is updated across all components
-            window.location.href = "/dashboard";
-          },
-        },
       });
 
-      if (signInError) {
-        setError(signInError.message || "Failed to sign in. Please check your credentials.");
+      if (result.error) {
+        setError(result.error.message || "Failed to sign in. Please check your credentials.");
         setIsLoading(false);
         return;
       }
+
+      window.location.href = callbackUrl;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(message);

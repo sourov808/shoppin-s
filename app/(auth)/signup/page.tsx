@@ -50,23 +50,19 @@ export default function SignupPage() {
     setError(null);
 
     try {
-      const { error: signUpError, data } = await authClient.signUp.email({
+      const result = await authClient.signUp.email({
         email: values.email,
         password: values.password,
         name: values.name,
-        fetchOptions: {
-          onSuccess: () => {
-            // Reload the page to ensure session is updated across all components
-            window.location.href = "/dashboard";
-          },
-        },
       });
 
-      if (signUpError) {
-        setError(signUpError.message || "Failed to create account.");
+      if (result.error) {
+        setError(result.error.message || "Failed to create account.");
         setIsLoading(false);
         return;
       }
+
+      window.location.href = "/dashboard";
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(message);

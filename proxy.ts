@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { authRoutes, apiAuthPrefix, adminRoutes, userRoutes } from "./routes";
 
-export function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { nextUrl } = request;
   const pathname = nextUrl.pathname;
 
