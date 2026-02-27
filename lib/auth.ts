@@ -4,6 +4,7 @@ import { db } from "./db";
 import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
+  baseURL: "https://e-shopping-lemon.vercel.app",
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),

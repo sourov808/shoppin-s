@@ -1,0 +1,76 @@
+PROBLEMS AND SOLUTIONS
+=======================
+
+PROBLEM 1: /api/auth/get-session returns 500 Internal Server Error
+------------------------------------------------------------------
+Cause: The better-auth get-session endpoint is failing because:
+1. The auth configuration might have issues with database connection in Vercel production
+2. The trustedOrigins configuration might not be properly set
+3. The session cookie might not be properly configured
+
+Solution: Need to ensure proper error handling and check auth configuration
+
+
+PROBLEM 2: After login, user cannot access protected pages
+-----------------------------------------------------------
+Cause: 
+1. Session cookie not being set properly after login
+2. The redirect after login uses window.location.href but session might not be established
+3. Protected pages check for session but it fails due to get-session API error
+
+Solution:
+1. Fix the authentication flow to properly establish session
+2. Use proper redirect mechanism that waits for session to be established
+
+
+PROBLEM 3: Server Components error on page load
+-----------------------------------------------
+Cause:
+1. The header component uses useSession() which calls /api/auth/get-session
+2. When this API fails, it causes server component errors
+3. The error handling in layouts catches and redirects, but the initial render fails
+
+Solution:
+1. Make the header completely client-side for session handling
+2. Add proper error boundaries
+3. Fix the auth API to return proper responses
+
+
+PROBLEM 4: Dynamic server usage errors during build
+----------------------------------------------------
+Cause:
+1. Server components using headers() are being prerendered statically
+2. This causes "Route couldn't be rendered statically" errors
+
+Solution:
+1. These are warnings during build, not critical errors
+2. The pages will be rendered dynamically at runtime
+
+
+WHY THESE PROBLEMS OCCURRED
+===========================
+
+1. DEVELOPMENT VS PRODUCTION DIFFERENCES:
+   - In development (localhost), everything works because:
+     * No CORS issues
+     * No environment variable issues
+     * Direct database connection
+   - In production (Vercel):
+     * Environment variables might not be properly set
+     * Cookie domain issues (localhost vs .vercel.app)
+     * Database connection pooling issues with Neon DB
+
+2. BETTER-AUTH CONFIGURATION:
+   - The trustedOrigins needs exact domain match
+   - The baseURL for client must match exactly
+   - Session cookies need proper SameSite and domain settings
+
+3. SESSION HANDLING:
+   - The useSession hook from better-auth/react calls get-session API
+   - This API uses headers() which requires dynamic rendering
+   - In production, the API fails silently returning 500
+
+4. STATIC RENDERING ISSUES:
+   - Next.js tries to prerender protected pages during build
+   - These pages need headers() for auth check
+   - Causes build warnings but should work at runtime
