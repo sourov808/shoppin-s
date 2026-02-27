@@ -285,37 +285,37 @@ const users = [
   {
     name: 'Admin User',
     email: 'sourovsd00@gmail.com',
-    password: 'Admin@123',
+    password: process.env.SEED_ADMIN_PASSWORD || 'Admin@123',
     role: 'ADMIN',
   },
   {
     name: 'John Smith',
     email: 'john.smith@example.com',
-    password: 'User@123',
+    password: process.env.SEED_USER_PASSWORD || 'User@123',
     role: 'USER',
   },
   {
     name: 'Sarah Johnson',
     email: 'sarah.j@example.com',
-    password: 'User@123',
+    password: process.env.SEED_USER_PASSWORD || 'User@123',
     role: 'USER',
   },
   {
     name: 'Michael Chen',
     email: 'm.chen@example.com',
-    password: 'User@123',
+    password: process.env.SEED_USER_PASSWORD || 'User@123',
     role: 'USER',
   },
   {
     name: 'Emily Davis',
     email: 'emily.d@example.com',
-    password: 'User@123',
+    password: process.env.SEED_USER_PASSWORD || 'User@123',
     role: 'USER',
   },
   {
     name: 'David Wilson',
     email: 'd.wilson@example.com',
-    password: 'User@123',
+    password: process.env.SEED_USER_PASSWORD || 'User@123',
     role: 'USER',
   },
 ];
