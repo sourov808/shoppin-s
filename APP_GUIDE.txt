@@ -1,0 +1,82 @@
+STITCH E-COMMERCE - MASTER APPLICATION GUIDE & ARCHITECTURE
+=========================================================
+
+INDEX
+-----
+1. Technology Stack
+2. System Architecture (Deep Dive)
+3. Core Technical Systems
+4. Admin Panel Architecture
+5. Caching & Data Freshness (How it Works)
+    - Client-Side Query Caching
+    - Image Optimization & Caching
+    - Browser State Persistence
+    - Session & Auth Caching
+6. Database Model (ERD Insights)
+7. Developer Workflow
+8. Security & Performance
+
+1. TECHNOLOGY STACK
+------------------
+* Framework: Next.js 16 (React 19, Turbopack)
+* Database: PostgreSQL (Neon Serverless)
+* ORM: Prisma
+* Auth: Better Auth
+* Data Fetching: React Query (@tanstack/react-query)
+
+2. SYSTEM ARCHITECTURE (DEEP DIVE)
+----------------------------------
+The application uses a hybrid rendering model where the server handles heavy lifting (DB queries) and the client handles immediate feedback (Cart, Search typing).
+
+[SYSTEM DIAGRAM]
+USER (Browser) <--> NEXT.JS (Server Actions/Pages) <--> PRISMA <--> NEON DB
+
+3. CORE TECHNICAL SYSTEMS
+-----------------------
+* AUTHENTICATION (RBAC): Session-based auth with secure HttpOnly cookies.
+* SHOPPING SYSTEM: Global context with local storage synchronization.
+* SEARCH ENGINE: Database-driven text searching with client-side debounce.
+
+4. ADMIN PANEL ARCHITECTURE
+---------------------------
+Security-first management dashboard. Admin role verification is performed at the layout level to prevent unauthorized data exposure.
+
+5. CACHING & DATA FRESHNESS (HOW IT WORKS)
+------------------------------------------
+The app implements a multi-layer caching strategy to ensure speed while maintaining data accuracy.
+
+* CLIENT-SIDE QUERY CACHING (React Query):
+    - HOW IT WORKS: React Query manages the state of remote data (like products).
+    - CONFIGURATION: Currently set to `staleTime: 0`.
+    - DURATION: Data is considered "stale" immediately. This means every time you re-focus the window or mount a component, the app silently fetches the latest data in the background to ensure you never see old prices or stock levels.
+
+* IMAGE OPTIMIZATION & CACHING:
+    - HOW IT WORKS: Images from Unsplash/Google are processed by the Next.js server to create smaller, web-optimized versions.
+    - DURATION: Optimized images are cached for 60 seconds (`minimumCacheTTL: 60`). After this, the server will check if a better version/fresh source is available.
+
+* BROWSER STATE PERSISTENCE (LocalStorage):
+    - ITEMS CACHED: Shopping Cart contents.
+    - HOW IT WORKS: When you add an item, it's saved to the browser's `localStorage` under the key `shopping_cart`.
+    - DURATION: Permanent until the user clears their browser data or checkout is completed. This ensures your cart survives a page refresh or even a browser restart.
+
+* SESSION & AUTH CACHING:
+    - HOW IT WORKS: Managed by cookies. Your login state is stored in a secure cookie.
+    - DURATION: Configured by Better Auth (typically 30 days unless signed out). This keeps you logged in without needing to re-enter credentials every time.
+
+6. DATABASE MODEL (ERD INSIGHTS)
+-------------------------------
+* USER: Links to Session, Address, and Order.
+* PRODUCT: The core entity for the storefront.
+* ORDER: Immutable snapshot of a transaction.
+
+7. DEVELOPER WORKFLOW
+--------------------
+1. Sync DB with Prisma.
+2. Define Server Actions for mutations.
+3. Use `useSession()` for client-side auth state.
+
+8. SECURITY & PERFORMANCE
+------------------------
+* NO AGGRESSIVE CACHING: Global `Cache-Control` headers are disabled to prevent the browser from caching sensitive user data (like login status).
+* TURBOPACK: Used for 10x faster development builds.
+* TYPE SAFETY: Zod schemas validate all incoming data before it hits the database.

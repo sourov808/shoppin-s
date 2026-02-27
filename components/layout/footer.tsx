@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-neutral-200 pt-16 pb-8">
+    <footer className="bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 pt-16 pb-8">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
           
@@ -11,9 +11,9 @@ export function Footer() {
               <div className="size-6 bg-primary rounded flex items-center justify-center text-white">
                 <span className="material-symbols-outlined text-[16px]">shopping_bag</span>
               </div>
-              <h2 className="text-neutral-900 text-lg font-bold">ShopModern</h2>
+              <h2 className="text-neutral-900 dark:text-neutral-100 text-lg font-bold">ShopModern</h2>
             </div>
-            <p className="text-neutral-500 text-sm max-w-xs leading-relaxed mb-6">
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-xs leading-relaxed mb-6">
               We are a modern lifestyle brand offering high-quality essentials for your everyday life. Designed with care and crafted to last.
             </p>
             <div className="flex gap-4">
@@ -30,8 +30,8 @@ export function Footer() {
           </div>
           
           <div>
-            <h3 className="text-neutral-900 font-bold mb-4">Shop</h3>
-            <ul className="space-y-2 text-sm text-neutral-500">
+            <h3 className="text-neutral-900 dark:text-neutral-100 font-bold mb-4">Shop</h3>
+            <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
               <li><Link className="hover:text-primary transition-colors" href="#">New Arrivals</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Men</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Women</Link></li>
@@ -41,8 +41,8 @@ export function Footer() {
           </div>
           
           <div>
-            <h3 className="text-neutral-900 font-bold mb-4">Help</h3>
-            <ul className="space-y-2 text-sm text-neutral-500">
+            <h3 className="text-neutral-900 dark:text-neutral-100 font-bold mb-4">Help</h3>
+            <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
               <li><Link className="hover:text-primary transition-colors" href="#">Customer Service</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Delivery &amp; Returns</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Terms &amp; Conditions</Link></li>
@@ -51,8 +51,8 @@ export function Footer() {
           </div>
           
           <div>
-            <h3 className="text-neutral-900 font-bold mb-4">Company</h3>
-            <ul className="space-y-2 text-sm text-neutral-500">
+            <h3 className="text-neutral-900 dark:text-neutral-100 font-bold mb-4">Company</h3>
+            <ul className="space-y-2 text-sm text-neutral-500 dark:text-neutral-400">
               <li><Link className="hover:text-primary transition-colors" href="#">About Us</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Careers</Link></li>
               <li><Link className="hover:text-primary transition-colors" href="#">Press</Link></li>
@@ -62,13 +62,13 @@ export function Footer() {
           
         </div>
         
-        <div className="border-t border-neutral-100 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="border-t border-neutral-100 dark:border-neutral-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-neutral-400">© {new Date().getFullYear()} ShopModern Inc. All rights reserved.</p>
           <div className="flex gap-4">
-            <div className="h-6 w-10 bg-neutral-100 rounded flex items-center justify-center text-[8px] text-neutral-400 font-bold">VISA</div>
-            <div className="h-6 w-10 bg-neutral-100 rounded flex items-center justify-center text-[8px] text-neutral-400 font-bold">MC</div>
-            <div className="h-6 w-10 bg-neutral-100 rounded flex items-center justify-center text-[8px] text-neutral-400 font-bold">AMEX</div>
-            <div className="h-6 w-10 bg-neutral-100 rounded flex items-center justify-center text-[8px] text-neutral-400 font-bold">PP</div>
+            <div className="h-6 w-10 bg-neutral-100 dark:bg-neutral-800 rounded flex items-center justify-center text-[8px] text-neutral-400 dark:text-neutral-500 font-bold">VISA</div>
+            <div className="h-6 w-10 bg-neutral-100 dark:bg-neutral-800 rounded flex items-center justify-center text-[8px] text-neutral-400 dark:text-neutral-500 font-bold">MC</div>
+            <div className="h-6 w-10 bg-neutral-100 dark:bg-neutral-800 rounded flex items-center justify-center text-[8px] text-neutral-400 dark:text-neutral-500 font-bold">AMEX</div>
+            <div className="h-6 w-10 bg-neutral-100 dark:bg-neutral-800 rounded flex items-center justify-center text-[8px] text-neutral-400 dark:text-neutral-500 font-bold">PP</div>
           </div>
         </div>
       </div>

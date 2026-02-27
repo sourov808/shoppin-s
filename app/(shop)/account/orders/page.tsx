@@ -70,7 +70,7 @@ export default async function OrdersPage() {
         </div>
         {orders.length === 0 && (
           <div className="p-8 text-center text-slate-500">
-            You haven't placed any orders yet.
+            You haven&apos;t placed any orders yet.
           </div>
         )}
       </div>
