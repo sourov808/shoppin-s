@@ -54,6 +54,12 @@ export default function SignupPage() {
         email: values.email,
         password: values.password,
         name: values.name,
+        fetchOptions: {
+          onSuccess: () => {
+            // Reload the page to ensure session is updated across all components
+            window.location.href = "/dashboard";
+          },
+        },
       });
 
       if (signUpError) {
@@ -61,10 +67,6 @@ export default function SignupPage() {
         setIsLoading(false);
         return;
       }
-
-      // Redirect to dashboard which will handle role-based redirect
-      router.push("/dashboard");
-      router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred";
       setError(message);

@@ -33,20 +33,6 @@ const nextConfig: NextConfig = {
   },
   // Compression
   compress: true,
-  // Headers for caching
-  async headers() {
-    return [
-      {
-        source: "/:path*{/}?",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;

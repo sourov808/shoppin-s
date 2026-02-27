@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { cookies } from "next/headers";
 
 export interface AuthActionResponse {
   success: boolean;
@@ -19,9 +20,17 @@ export interface AuthActionResponse {
  */
 export async function signOutAction(): Promise<AuthActionResponse> {
   try {
-    await authClient.signOut();
+    // Use the server-side auth API to sign out
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    // Clear any remaining cookies
+    const cookieStore = await cookies();
+    cookieStore.delete("better-auth.session_token");
+
     revalidatePath("/", "layout");
-    redirect("/login");
+    redirect("/");
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to sign out";
     return {
