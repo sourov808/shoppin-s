@@ -13,6 +13,6 @@ export const auth = betterAuth({
   plugins: [nextCookies()],
   trustedOrigins: [
     "http://localhost:3000",
-    process.env.BETTER_AUTH_URL || "https://e-shopping-lemon.vercel.app",
+    "https://e-shopping-lemon.vercel.app",
   ],
 });
