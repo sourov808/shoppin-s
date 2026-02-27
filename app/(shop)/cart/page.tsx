@@ -21,7 +21,7 @@ export default function CartPage() {
         </div>
         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Your cart is empty</h1>
         <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md">
-          Looks like you haven't added any items to your cart yet. Browse our products and find something you love.
+          Looks like you haven&apos;t added any items to your cart yet. Browse our products and find something you love.
         </p>
         <Link href="/products" className="bg-primary hover:bg-primary/90 text-white font-bold h-12 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
           Start Shopping

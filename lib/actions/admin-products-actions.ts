@@ -223,7 +223,7 @@ export async function updateProduct(productId: string, data: Partial<ProductForm
     }
 
     // Map category string to enum if provided
-    let updateData: Record<string, unknown> = { ...data };
+    const updateData: Record<string, unknown> = { ...data };
     
     if (data.category) {
       const categoryMap: Record<string, string> = {
