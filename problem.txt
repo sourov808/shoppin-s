@@ -1,0 +1,162 @@
+PROBLEMS, CAUSES AND SOLUTIONS
+===============================
+
+================================================================================
+PROBLEM 1: Server Components Error on Page Load
+================================================================================
+
+ERROR MESSAGE:
+"Uncaught Error: An error occurred in the Server Components render"
+
+CAUSE:
+The middleware (proxy.ts) was intercepting ALL requests including the 
+/api/auth/* endpoints. This caused conflicts because:
+1. The proxy was checking session cookies before the auth API could process them
+2. The middleware tried to render protected pages during Next.js build time
+3. The headers() function was being called during static generation
+
+SOLUTION:
+Removed the proxy.ts middleware file completely. The authentication is now 
+handled entirely by better-auth's built-in nextCookies() plugin and the 
+[...all] route handler.
+
+
+================================================================================
+PROBLEM 2: /api/auth/get-session Returns 500 Error
+================================================================================
+
+ERROR MESSAGE:
+"GET https://e-shopping-lemon.vercel.app/api/auth/get-session 500 
+(Internal Server Error)"
+
+CAUSE:
+The auth configuration was missing the baseURL parameter. In production,
+better-auth needs to know the exact base URL to:
+1. Validate session cookies properly
+2. Generate correct redirect URLs
+3. Handle CORS and cookie settings correctly
+
+SOLUTION:
+Added baseURL to the better-auth configuration in lib/auth.ts:
+  export const auth = betterAuth({
+    baseURL: "https://e-shopping-lemon.vercel.app",
+    // ... rest of config
+  });
+
+
+================================================================================
+PROBLEM 3: After Login User Cannot Access Protected Pages
+================================================================================
+
+ERROR MESSAGE:
+User logs in successfully but gets redirected back to login page when
+accessing protected routes like /account or /admin
+
+CAUSE:
+1. The proxy/middleware was interfering with session cookie handling
+2. After login redirect using window.location.href caused full page reload
+   but session wasn't being properly established due to middleware conflict
+3. The trustedOrigins configuration might not have been matching exactly
+
+SOLUTION:
+1. Removed the middleware (proxy.ts) that was blocking proper auth flow
+2. Added baseURL to auth configuration
+3. Updated trustedOrigins in lib/auth.ts to include both localhost and 
+   production URL:
+   trustedOrigins: [
+     "http://localhost:3000",
+     "https://e-shopping-lemon.vercel.app",
+   ]
+
+
+================================================================================
+PROBLEM 4: Dynamic Server Usage Errors During Build
+================================================================================
+
+ERROR MESSAGE:
+"Route /admin couldn't be rendered statically because it used `headers`"
+
+CAUSE:
+This is a BUILD-TIME warning, not a runtime error. Next.js tries to 
+prerender pages during build, but pages using headers() for authentication
+must be rendered dynamically at runtime.
+
+This warning appears for:
+- /admin/* routes
+- /account/* routes  
+- /dashboard
+
+These pages need to check authentication headers, so they cannot be
+prerendered statically.
+
+SOLUTION:
+No fix needed - this is expected behavior. These warnings appear during
+build but the pages work correctly at runtime because they are rendered
+dynamically (marked with "ƒ" in the route list).
+
+
+================================================================================
+WHY THESE PROBLEMS OCCURRED
+================================================================================
+
+1. DEVELOPMENT VS PRODUCTION DIFFERENCE:
+   - In development (localhost), everything works because:
+     * No CORS issues between same-origin requests
+     * No cookie domain issues
+     * Environment variables load correctly
+   - In production (Vercel):
+     * Different domain = different cookie behavior
+     * Vercel's serverless functions have different request handling
+     * Environment variables need explicit configuration
+
+2. MIDDLEWARE CONFLICT:
+   The custom proxy.ts was trying to do authentication checks before
+   better-auth could handle it. This caused a conflict because both
+   were trying to read/set cookies and headers.
+
+3. MISSING BASEURL:
+   better-auth's baseURL is critical in production. Without it:
+   - Session cookies might not be set correctly
+   - Redirect URLs might be wrong
+   - API endpoints might fail validation
+
+4. STATIC GENERATION ATTEMPTS:
+   Next.js tries to prerender all pages during build. Pages using
+   headers() for auth will fail this, causing the warning. But these
+   pages correctly fall back to dynamic rendering at runtime.
+
+
+================================================================================
+KEY CONFIGURATION CHANGES MADE
+================================================================================
+
+1. lib/auth.ts - Added baseURL:
+   export const auth = betterAuth({
+     baseURL: "https://e-shopping-lemon.vercel.app",
+     database: prismaAdapter(db, { provider: "postgresql" }),
+     emailAndPassword: { enabled: true },
+     plugins: [nextCookies()],
+     trustedOrigins: [
+       "http://localhost:3000",
+       "https://e-shopping-lemon.vercel.app",
+     ],
+   });
+
+2. lib/auth-client.ts - Hardcoded baseURL:
+   export const authClient = createAuthClient({
+     baseURL: "https://e-shopping-lemon.vercel.app",
+   });
+
+3. Removed proxy.ts - The middleware was causing conflicts with 
+   better-auth's built-in authentication handling.
+
+
+================================================================================
+FILES MODIFIED TO FIX
+================================================================================
+
+1. lib/auth.ts - Added baseURL configuration
+2. lib/auth-client.ts - Hardcoded production URL
+3. proxy.ts - DELETED (removed middleware that was causing conflicts)
+4. .env - Updated BETTER_AUTH_URL and NEXT_PUBLIC_APP_URL to production URL
+5. vercel.json - Added environment variables for production build

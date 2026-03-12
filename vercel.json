@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npx prisma generate && pnpm run build",
+  "installCommand": "pnpm install",
+  "env": {
+    "BETTER_AUTH_URL": "https://e-shopping-lemon.vercel.app",
+    "NEXT_PUBLIC_APP_URL": "https://e-shopping-lemon.vercel.app"
+  }
+}

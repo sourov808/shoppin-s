@@ -20,9 +20,10 @@ export interface AuthActionResponse {
  */
 export async function signOutAction(): Promise<AuthActionResponse> {
   try {
+    const headersList = await headers();
     // Use the server-side auth API to sign out
     await auth.api.signOut({
-      headers: await headers(),
+      headers: headersList,
     });
 
     // Clear any remaining cookies
@@ -46,8 +47,9 @@ export async function signOutAction(): Promise<AuthActionResponse> {
  */
 export async function getCurrentSession() {
   try {
+    const headersList = await headers();
     const session = await auth.api.getSession({
-      headers: await headers(),
+      headers: headersList,
     });
 
     if (!session?.user?.id) {
@@ -81,7 +83,8 @@ export async function getCurrentSession() {
         role: user.role,
       },
     };
-  } catch {
+  } catch (error) {
+    console.error("Error getting session:", error);
     return null;
   }
 }
