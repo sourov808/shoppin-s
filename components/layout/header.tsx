@@ -68,17 +68,16 @@ function MobileNavContent({
 
 export function Header() {
   const { cartCount } = useCart();
-  const { data: session, isPending, refetch } = useSession();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   // Use useEffect only for hydration safety
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 0);
-    return () => clearTimeout(timer);
+    setMounted(true);
   }, []);
+
+  // Don't call useSession until mounted to avoid SSR issues
+  const { data: session, isPending, refetch } = useSession();
 
   const handleSignOut = async () => {
     await signOut();
